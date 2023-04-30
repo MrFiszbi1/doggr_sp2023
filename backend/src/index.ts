@@ -5,7 +5,7 @@ dotenv.config();
 
 
 
-app.listen({ port: 8080}, 
+app.listen({ port: Number(process.env.PORT), host: process.env.HOST},
 	(err, address) => {
 		if (err) {
 			console.error(err);

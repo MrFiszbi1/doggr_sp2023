@@ -20,6 +20,7 @@ async function DoggrRoutes(app: FastifyInstance, _options = {}) {
 		return req.em.find(User, {});
 	});
 
+
 	app.post<{
 		Body: ICreateUserBody
 	}>("/users", async (req, reply) => {
@@ -43,6 +44,52 @@ async function DoggrRoutes(app: FastifyInstance, _options = {}) {
 		} catch (err) {
 			console.log("Failed to create new user: ", err.message);
 			return reply.status(500).send({ message: err.message});
+		}
+	});
+
+	app.search("/users", async (req, reply) => {
+		const {email} = req.body;
+
+		try {
+			const theUser = await req.em.findOne(User, {email});
+			console.log(theUser);
+			reply.send(theUser);
+		} catch (err) {
+			console.error(err);
+			reply.status(500)
+				.send(err);
+		}
+	});
+
+	//update
+	app.put<{
+		Body: ICreateUserBody
+	}>("/users", async(req, reply) => {
+		const {email, name, petType} = req.body;
+
+		const userToChange = await req.em.findOne(User, {email});
+		userToChange.name = name;
+		userToChange.petType = petType;
+
+		await req.em.flush();
+		console.log(userToChange);
+		reply.send(userToChange);
+
+	});
+
+	// DELETE
+	app.delete<{ Body: {email}}>("/users", async(req, reply) => {
+		const { email } = req.body;
+
+		try {
+			const theUser = await req.em.findOne(User, { email });
+
+			await req.em.remove(theUser).flush();
+			console.log(theUser);
+			reply.send(theUser);
+		} catch (err) {
+			console.error(err);
+			reply.status(500).send(err);
 		}
 	});
 }
