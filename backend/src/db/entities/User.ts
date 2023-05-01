@@ -1,5 +1,6 @@
-import { Entity, Property, Unique } from "@mikro-orm/core";
+import {Entity, Property, Unique, OneToMany, Cascade, Collection} from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity.js";
+import {Match} from "./Match.js";
 
 @Entity({tableName: "users"})
 export class User extends BaseEntity {	
@@ -13,6 +14,15 @@ export class User extends BaseEntity {
 	@Property()
 	petType!: string;
 
-	@Property()
-	isMatched: boolean = false;
+	@OneToMany(
+		() => Match,
+		match => match.owner,
+		{cascade: [Cascade.PERSIST, Cascade.REMOVE]})
+	matches!: Collection<Match>;
+
+	@OneToMany(
+		() => Match,
+		match => match.matchee,
+		{cascade: [Cascade.PERSIST, Cascade.REMOVE]})
+	matched_me!: Collection<Match>;
 }

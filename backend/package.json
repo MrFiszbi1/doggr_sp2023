@@ -13,9 +13,12 @@
     "schema:update": "pnpm mikro-orm-esm schema:update --run --fk-checks",
     "schema:drop": "pnpm mikro-orm-esm schema:drop --run",
     "seed:create": "pnpm mikro-orm-esm seeder:create ",
+    "migration:create": "pnpm mikro-orm-esm migration:create --name ",
+    "migration:up": "pnpm mikro-orm-esm migration:up",
+    "migration:down": "pnpm mikro-orm-esm migration:down",
     "seed:run": "pnpm mikro-orm-esm seeder:run",
     "db:reset": "pnpm schema:drop && pnpm schema:update && pnpm seed:run",
-    "startProd": "pnpm db:reset && pnpm start"
+    "startProd": "pnpm migration:up && pnpm start"
   },
   "scriptsComments": {
     "dev": "Runs watcher dev server, see https://github.com/nodejs/node/issues/30810#issuecomment-1446093458 for no-warnings",

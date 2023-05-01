@@ -1,6 +1,7 @@
 import {User} from "./db/entities/User.js";
 import { FastifyInstance, FastifyReply, FastifyRequest} from "fastify";
 import {ICreateUserBody} from "./types.js";
+import {Match} from "./db/entities/Match.js";
 
 
 async function DoggrRoutes(app: FastifyInstance, _options = {}) {
@@ -90,6 +91,28 @@ async function DoggrRoutes(app: FastifyInstance, _options = {}) {
 		} catch (err) {
 			console.error(err);
 			reply.status(500).send(err);
+		}
+	});
+
+	//create match route
+	app.post<{Body: { email: string, matchee_email: string }}>("/match", async (req, reply) => {
+		const { email, matchee_email } = req.body;
+
+		try {
+			const matchee = await req.em.findOne(User, {email: matchee_email});
+			const owner = await req.em.findOne(User, {email});
+
+			const newMatch = await req.em.create(Match, {
+				owner,
+				matchee
+			});
+
+			await req.em.flush();
+
+			return reply.send(newMatch);
+		} catch (err) {
+			console.log(err);
+			return reply.status(500).send(err);
 		}
 	});
 }
